@@ -1,9 +1,7 @@
 package com.insper.partida.game;
 
 import com.insper.partida.equipe.Team;
-import com.insper.partida.equipe.TeamRepository;
 import com.insper.partida.equipe.TeamService;
-import com.insper.partida.equipe.dto.TeamReturnDTO;
 import com.insper.partida.game.dto.EditGameDTO;
 import com.insper.partida.game.dto.GameReturnDTO;
 import com.insper.partida.game.dto.SaveGameDTO;
@@ -15,10 +13,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.core.IsInstanceOf.any;
 
 @ExtendWith(MockitoExtension.class)
 public class GameServiceTests {
@@ -28,14 +22,20 @@ public class GameServiceTests {
     @Mock
     GameRepository gameRepository;
 
+    @Mock
+    TeamService teamService;
+
     @Test
     void test_saveGame(){
         Game game = getGame();
-        Mockito.when(gameRepository.save(game)).thenReturn(game);
+        Team sao_paulo = sao_paulo();
+        Team palmeiras = palmeiras();
+        Mockito.when(teamService.getTeam("sao_paulo")).thenReturn(sao_paulo);
+        Mockito.when(teamService.getTeam("palmeiras")).thenReturn(palmeiras);
         SaveGameDTO saveGameDTO= new SaveGameDTO();
         saveGameDTO.setAway(game.getAway());
         saveGameDTO.setHome(game.getHome());
-        Assertions.assertEquals("sao_paulo",gameService.saveGame(saveGameDTO).getHome().getName());
+        Assertions.assertEquals("sao_paulo",gameService.saveGame(saveGameDTO).getHome().getIdentifier());
     }
 
     @Test
@@ -57,11 +57,27 @@ public class GameServiceTests {
         // Add more assertions as needed.
     }
 
+    private static Team sao_paulo(){
+        Team sao_paulo = new Team();
+        sao_paulo.setStadium("morumbi");
+        sao_paulo.setIdentifier("sao_paulo");
+        sao_paulo.setName("São Paulo");
+        return  sao_paulo;
+    }
+
+    private static Team palmeiras(){
+        Team palmeiras = new Team();
+        palmeiras.setStadium("Allianz");
+        palmeiras.setIdentifier("palmeiras");
+        palmeiras.setName("Palmeiras");
+        return palmeiras;
+    }
+
     private static Game getGame() {
         Game game = new Game();
         game.setIdentifier("123");
         game.setHome("sao_paulo");
-        game.setAway("corinthians");
+        game.setAway("palmeiras");
         return game;
     }
 }
